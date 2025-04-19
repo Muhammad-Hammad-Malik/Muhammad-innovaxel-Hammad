@@ -190,6 +190,28 @@
     <div id="deleteResult" class="result-box d-none">
       <p class="text-success">Short URL deleted successfully.</p>
     </div>
+    <hr />
+    <h5 class="text-center mt-4">Search Metrics by Short Code</h5>
+    <form id="metricsForm">
+      <div class="mb-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="metricsShortCode"
+            placeholder="Enter short code (e.g. abc123)"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Get Metrics</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="metricsResult" class="result-box d-none">
+      <p><strong>Total Clicks:</strong> <span id="clickCount"></span></p>
+      <p><strong>Created At:</strong> <span id="createdAt"></span></p>
+      <p><strong>Updated At:</strong> <span id="editedAt"></span></p>
+    </div>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -338,6 +360,37 @@
           } catch (err) {
             alert(`Error: ${err.message}`);
             deleteResult.classList.add("d-none");
+          }
+        });
+    </script>
+    <script>
+      document
+        .getElementById("metricsForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const code = document.getElementById("metricsShortCode").value;
+          const metricsResult = document.getElementById("metricsResult");
+          const clickCount = document.getElementById("clickCount");
+          const createdAt = document.getElementById("createdAt");
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/shorten/stats/${code}`
+            );
+
+            if (!response.ok) {
+              throw new Error("Metrics not found for this code");
+            }
+
+            const data = await response.json();
+            clickCount.textContent = data.accessCount;
+            createdAt.textContent = new Date(data.createdAt).toLocaleString();
+            editedAt.textContent = new Date(data.updatedAt).toLocaleString();
+            metricsResult.classList.remove("d-none");
+          } catch (err) {
+            alert(`Error: ${err.message}`);
+            metricsResult.classList.add("d-none");
           }
         });
     </script>

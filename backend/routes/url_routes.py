@@ -46,7 +46,7 @@ async def delete_short_url(short_code: str):
         raise HTTPException(status_code=404, detail=f"Short URL not found: {str(e)}")
 
 
-@router.get("/shorten/{short_code}/stats", response_model=URLModel)
+@router.get("/shorten/stats/{short_code}", response_model=URLModel)
 async def get_stats(short_code: str):
     try:
         stats = await get_url_stats(short_code)
