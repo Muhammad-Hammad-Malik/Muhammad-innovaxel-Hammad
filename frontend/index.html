@@ -171,11 +171,25 @@
       </p>
     </div>
 
-    <footer class="footer text-center">
-      <div class="container">
-        <p>© 2025 URL Shortener | Make your links compact</p>
+    <hr />
+    <h5 class="text-center mt-4">Delete Short URL</h5>
+    <form id="deleteForm">
+      <div class="mb-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="deleteShortCode"
+            placeholder="Enter your short code (e.g. abc123)"
+            required
+          />
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
       </div>
-    </footer>
+    </form>
+    <div id="deleteResult" class="result-box d-none">
+      <p class="text-success">Short URL deleted successfully.</p>
+    </div>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -296,6 +310,34 @@
           } catch (err) {
             alert(`Error: ${err.message}`);
             updateResult.classList.add("d-none");
+          }
+        });
+    </script>
+    <script>
+      document
+        .getElementById("deleteForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const shortCode = document.getElementById("deleteShortCode").value;
+          const deleteResult = document.getElementById("deleteResult");
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/shorten/${shortCode}`,
+              {
+                method: "DELETE",
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to delete URL");
+            }
+
+            deleteResult.classList.remove("d-none");
+          } catch (err) {
+            alert(`Error: ${err.message}`);
+            deleteResult.classList.add("d-none");
           }
         });
     </script>
