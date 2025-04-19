@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import datetime
 from bson import ObjectId
 
-
 # Helper to handle Mongo's _id field with Pydantic
 class PyObjectId(ObjectId):
     @classmethod

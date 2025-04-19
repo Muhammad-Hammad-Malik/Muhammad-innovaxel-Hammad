@@ -32,3 +32,15 @@ async def create_short_url(data: URLCreate):
     new_url = await urls_collection.find_one({"_id": result.inserted_id})
 
     return URLModel(**new_url)
+
+async def get_original_url(short_code: str):
+    urls_collection = db["urls"]
+    updated_doc = await urls_collection.find_one_and_update(
+        {"_id": short_code},
+        {"$inc": {"accessCount": 1}, "$set": {"updatedAt": datetime.utcnow()}},
+        return_document=True  
+    )
+    if updated_doc:
+        return URLModel(**updated_doc)
+    return None
+
