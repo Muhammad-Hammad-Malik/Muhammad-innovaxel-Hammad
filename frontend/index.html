@@ -71,7 +71,7 @@
   <body>
     <div class="container py-5">
       <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-6 col-lg-5 col-xl-4">
           <div class="card">
             <div class="card-body">
               <h1 class="card-title text-center mb-4">URL Shortener</h1>
@@ -114,6 +114,29 @@
           </div>
         </div>
       </div>
+    </div>
+    <hr />
+    <h5 class="text-center mt-4">Retrieve Original URL</h5>
+    <form id="retrieveForm">
+      <div class="mb-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="shortCodeInput"
+            placeholder="Enter your short code (e.g. abc123)"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Retrieve</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="originalResult" class="result-box d-none">
+      <p>
+        <strong>Original URL:</strong>
+        <a href="#" target="_blank" id="originalUrlDisplay"></a>
+      </p>
     </div>
 
     <footer class="footer text-center">
@@ -171,6 +194,39 @@
           setTimeout(() => {
             copyButton.textContent = originalText;
           }, 2000);
+        });
+    </script>
+    <script>
+      document
+        .getElementById("retrieveForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const code = document.getElementById("shortCodeInput").value;
+          const originalResult = document.getElementById("originalResult");
+          const originalUrlDisplay =
+            document.getElementById("originalUrlDisplay");
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/shorten/${code}`,
+              {
+                method: "GET",
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Short URL not found");
+            }
+
+            const data = await response.json();
+            originalUrlDisplay.href = data.url;
+            originalUrlDisplay.textContent = data.url;
+            originalResult.classList.remove("d-none");
+          } catch (err) {
+            alert(`Error: ${err.message}`);
+            originalResult.classList.add("d-none");
+          }
         });
     </script>
   </body>
