@@ -3,11 +3,10 @@ import string
 from datetime import datetime
 from models.url_model import URLModel, URLCreate
 from database import db
-
+from models.url_model import URLUpdate
 
 def generate_short_code(length=6):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-
 
 async def create_short_url(data: URLCreate):
     urls_collection = db["urls"]
@@ -22,7 +21,6 @@ async def create_short_url(data: URLCreate):
         "updatedAt": now,
         "accessCount": 0
     }
-
     # Insert the new URL document
     try:
         result = await urls_collection.insert_one(url_doc)
@@ -44,3 +42,20 @@ async def get_original_url(short_code: str):
         return URLModel(**updated_doc)
     return None
 
+
+async def update_short_url(short_code: str, data: URLUpdate):
+    urls_collection = db["urls"]
+    existing_url = await urls_collection.find_one({"_id": short_code})
+    
+    if not existing_url:
+        raise ValueError("Short URL not found")
+
+    now = datetime.utcnow()
+    update_result = await urls_collection.update_one(
+        {"_id": short_code},
+        {"$set": {"url": str(data.url), "updatedAt": now}}
+    )
+
+    # Fetch the updated document
+    updated_url = await urls_collection.find_one({"_id": short_code})
+    return URLModel(**updated_url)

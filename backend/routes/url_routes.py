@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from models.url_model import URLCreate, URLModel
 from controllers.url_controller import create_short_url
 from controllers.url_controller import get_original_url
+from controllers.url_controller import update_short_url
+from models.url_model import URLUpdate
 
 router = APIRouter()
 
@@ -21,3 +23,14 @@ async def retrieve_original_url(short_code: str):
     if not url_data:
         raise HTTPException(status_code=404, detail="Short URL not found")
     return url_data
+
+
+@router.put("/shorten/{short_code}", response_model=URLModel)
+async def update_url(short_code: str, url_data: URLUpdate):
+    try:
+        updated_url = await update_short_url(short_code, url_data)
+        return updated_url
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

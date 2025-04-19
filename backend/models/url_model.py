@@ -38,3 +38,6 @@ class URLModel(BaseModel):
 # Model for creating a new URL (client-side input)
 class URLCreate(BaseModel):
     url: HttpUrl
+    
+class URLUpdate(BaseModel):
+    url: HttpUrl
