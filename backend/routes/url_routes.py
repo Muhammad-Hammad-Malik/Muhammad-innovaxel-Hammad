@@ -4,6 +4,7 @@ from controllers.url_controller import create_short_url
 from controllers.url_controller import get_original_url
 from controllers.url_controller import update_short_url
 from controllers.url_controller import delete_short_url_by_code
+from controllers.url_controller import get_url_stats  
 from models.url_model import URLUpdate
 
 router = APIRouter()
@@ -43,3 +44,12 @@ async def delete_short_url(short_code: str):
         await delete_short_url_by_code(short_code)
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Short URL not found: {str(e)}")
+
+
+@router.get("/shorten/{short_code}/stats", response_model=URLModel)
+async def get_stats(short_code: str):
+    try:
+        stats = await get_url_stats(short_code)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))

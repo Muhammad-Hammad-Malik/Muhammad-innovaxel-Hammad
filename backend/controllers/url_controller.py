@@ -70,3 +70,10 @@ async def delete_short_url_by_code(short_code: str):
 
     # Delete the URL document
     await urls_collection.delete_one({"_id": short_code})
+    
+async def get_url_stats(short_code: str):
+    urls_collection = db["urls"]
+    url_doc = await urls_collection.find_one({"_id": short_code})
+    if not url_doc:
+        raise Exception("Short URL not found")
+    return URLModel(**url_doc)
