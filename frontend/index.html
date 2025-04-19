@@ -138,6 +138,38 @@
         <a href="#" target="_blank" id="originalUrlDisplay"></a>
       </p>
     </div>
+    <hr />
+    <h5 class="text-center mt-4">Update Existing Short URL</h5>
+    <form id="updateForm">
+      <div class="mb-3">
+        <div class="input-group mb-2">
+          <input
+            type="text"
+            class="form-control"
+            id="updateShortCode"
+            placeholder="Enter your short code (e.g. abc123)"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <input
+            type="url"
+            class="form-control"
+            id="newLongUrl"
+            placeholder="Enter new long URL"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="updateResult" class="result-box d-none">
+      <p>
+        <strong>Updated URL:</strong>
+        <a href="#" target="_blank" id="updatedUrlDisplay"></a>
+      </p>
+    </div>
 
     <footer class="footer text-center">
       <div class="container">
@@ -226,6 +258,44 @@
           } catch (err) {
             alert(`Error: ${err.message}`);
             originalResult.classList.add("d-none");
+          }
+        });
+    </script>
+    <script>
+      document
+        .getElementById("updateForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const shortCode = document.getElementById("updateShortCode").value;
+          const newUrl = document.getElementById("newLongUrl").value;
+          const updateResult = document.getElementById("updateResult");
+          const updatedUrlDisplay =
+            document.getElementById("updatedUrlDisplay");
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/shorten/${shortCode}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ url: newUrl }),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to update URL");
+            }
+
+            const data = await response.json();
+            updatedUrlDisplay.href = data.url;
+            updatedUrlDisplay.textContent = data.url;
+            updateResult.classList.remove("d-none");
+          } catch (err) {
+            alert(`Error: ${err.message}`);
+            updateResult.classList.add("d-none");
           }
         });
     </script>
