@@ -59,3 +59,14 @@ async def update_short_url(short_code: str, data: URLUpdate):
     # Fetch the updated document
     updated_url = await urls_collection.find_one({"_id": short_code})
     return URLModel(**updated_url)
+
+async def delete_short_url_by_code(short_code: str):
+    urls_collection = db["urls"]
+    # Check if the short URL exists
+    existing_url = await urls_collection.find_one({"_id": short_code})
+
+    if not existing_url:
+        raise ValueError("Short URL not found")
+
+    # Delete the URL document
+    await urls_collection.delete_one({"_id": short_code})

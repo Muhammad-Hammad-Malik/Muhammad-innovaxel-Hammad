@@ -3,6 +3,7 @@ from models.url_model import URLCreate, URLModel
 from controllers.url_controller import create_short_url
 from controllers.url_controller import get_original_url
 from controllers.url_controller import update_short_url
+from controllers.url_controller import delete_short_url_by_code
 from models.url_model import URLUpdate
 
 router = APIRouter()
@@ -34,3 +35,11 @@ async def update_url(short_code: str, url_data: URLUpdate):
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+    
+@router.delete("/shorten/{short_code}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_short_url(short_code: str):
+    try:
+        await delete_short_url_by_code(short_code)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Short URL not found: {str(e)}")
